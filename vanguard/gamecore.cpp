@@ -12,21 +12,33 @@ bool GameCore::init(int width, int height)
 		return false;
 	}
 
+	SDL_GL_LoadLibrary(nullptr); // Default OpenGL is fine.
+
+	// Request an OpenGL 4.3 context (should be core)
+	SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
+
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+
 	//Create window
-	window = SDL_CreateWindow("Vanguard", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_SHOWN);
-	if (window == NULL)
+	window = SDL_CreateWindow("Vanguard", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+	if (window == nullptr)
 	{
 		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Window could not be created! SDL_Error: %s\n", SDL_GetError());
 		return false;
 	}
-	
-	//Create renderer for window
-	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-	if (renderer == NULL)
-	{
-		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Renderer could not be created! SDL Error: %s\n", SDL_GetError());
-		return false;
+
+	static SDL_GLContext maincontext = SDL_GL_CreateContext(window);
+	if (maincontext == nullptr) {
+		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to create OpenGL context. SDL_Error: %s\n", SDL_GetError());
+		return nullptr;
 	}
+
+	SDL_GL_SetSwapInterval(1);
 
 	// initialize the keys
 	key.fireUp = false;	
@@ -38,12 +50,6 @@ bool GameCore::init(int width, int height)
 	key.left = false;
 	key.right = false;
 
-	//Initialize renderer color
-	SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
-
-	//Clear screen
-	SDL_RenderClear(renderer);
-
 	return true;
 }
 
@@ -51,7 +57,6 @@ bool GameCore::init(int width, int height)
 // Destroys the avancez library instance
 void GameCore::destroy()
 {
-	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 
 	SDL_Quit();
@@ -135,9 +140,6 @@ bool GameCore::update()
 
 	}
 
-	SDL_RenderPresent(renderer);
-	SDL_RenderClear(renderer);
-
 	return true;
 }
 
@@ -148,52 +150,7 @@ void GameCore::processInput()
 
 void GameCore::render()
 {
-
-}
-
-
-Sprite * GameCore::createSprite(const char * path)
-{
-	SDL_Surface* surf = SDL_LoadBMP(path);
-	if (surf == NULL)
-	{
-		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unable to load image %s! SDL_image Error: %s\n", path, SDL_GetError());
-		return NULL;
-	}
-
-	//Create texture from surface pixels
-	SDL_Texture * texture = SDL_CreateTextureFromSurface(renderer, surf);
-	if (texture == NULL)
-	{
-		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unable to create texture from %s! SDL Error: %s\n", path, SDL_GetError());
-		return NULL;
-	}
-
-	//Get rid of old loaded surface
-	SDL_FreeSurface(surf);
-
-	Sprite * sprite = new Sprite(renderer, texture);
-
-	return sprite;
-}
-
-void GameCore::drawText(int x, int y, const char * msg)
-{
-	SDL_Color black = { 0, 0, 0 };
-
-	SDL_Surface* surf = TTF_RenderText_Solid(font, msg, black);
-
-	SDL_Texture* msg_texture = SDL_CreateTextureFromSurface(renderer, surf);
-
-	int w = 0;
-	int h = 0;
-	SDL_QueryTexture(msg_texture, NULL, NULL, &w, &h);
-	SDL_Rect dst_rect = { x, y, w, h };
-
-	SDL_RenderCopy(renderer, msg_texture, NULL, &dst_rect);
-
-	SDL_DestroyTexture(msg_texture);
-	SDL_FreeSurface(surf);
+	SDL_GL_SwapWindow(window);
 }
 
 float GameCore::getElapsedTime()
@@ -212,31 +169,3 @@ void GameCore::getKeyStatus(KeyStatus & keys)
 	keys.up = key.up;
 	keys.down = key.down;
 }
-
-
-Sprite::Sprite(SDL_Renderer * renderer, SDL_Texture * texture)
-{
-	this->renderer = renderer;
-	this->texture = texture;
-}
-
-
-void Sprite::draw(int x, int y)
-{
-	SDL_Rect rect;
-
-	rect.x = x;
-	rect.y = y;
-
-	SDL_QueryTexture(texture, NULL, NULL, &(rect.w), &(rect.h));
-
-	//Render texture to screen
-	SDL_RenderCopy(renderer, texture, NULL, &rect);
-}
-
-
-void Sprite::destroy()
-{
-	SDL_DestroyTexture(texture);
-}
-
