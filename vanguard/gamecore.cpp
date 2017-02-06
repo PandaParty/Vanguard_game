@@ -1,8 +1,12 @@
 #include "gamecore.h"
+#include <GL/glew.h>
+#include <string>
+#include <fstream>
+#include <streambuf>
 
 
-
-
+GLuint vertexArrayObject;
+GLuint shaderProgram;
 // Creates the main window. Returns true on success.
 bool GameCore::init(int width, int height)
 {
@@ -37,7 +41,7 @@ bool GameCore::init(int width, int height)
 		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to create OpenGL context. SDL_Error: %s\n", SDL_GetError());
 		return nullptr;
 	}
-
+	glewInit();
 	SDL_GL_SetSwapInterval(1);
 
 	// initialize the keys
@@ -137,7 +141,6 @@ bool GameCore::update()
 				break;
 			}
 		}
-
 	}
 
 	return true;
@@ -150,6 +153,12 @@ void GameCore::processInput()
 
 void GameCore::render()
 {
+	int w, h;
+	SDL_GetWindowSize(window, &w, &h);
+	glViewport(0, 0, w, h);	
+	glClearColor(0.2f, 0.6f, 0.4f, 1.0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
 	SDL_GL_SwapWindow(window);
 }
 

@@ -1,6 +1,9 @@
 #include "stdio.h"
 #include "gamecore.h"
-
+#include <GL/glew.h>
+#include <string>
+#include <fstream>
+#include <streambuf>
 
 const int MS_PER_UPDATE = 16;
 
@@ -28,7 +31,8 @@ int main(int argc, char** argv)
 		}
 
 		gameCore.render();
-	}
 
+	}
+	gameCore.destroy();
 	return 0;
 }

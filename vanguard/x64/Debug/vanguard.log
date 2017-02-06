@@ -1,4 +1,4 @@
 ﻿  gamecore.cpp
-c:\users\anton\documents\game engine architecture\vanguard\vanguard\gamecore.cpp(158): warning C4244: 'return': conversion from 'Uint32' to 'float', possible loss of data
+c:\users\anton\documents\game engine architecture\vanguard\vanguard\gamecore.cpp(257): warning C4244: 'return': conversion from 'Uint32' to 'float', possible loss of data
   vanguard.vcxproj -> C:\Users\Anton\Documents\Game Engine Architecture\Vanguard\vanguard\x64\Debug\vanguard.exe
   vanguard.vcxproj -> C:\Users\Anton\Documents\Game Engine Architecture\Vanguard\vanguard\x64\Debug\vanguard.pdb (Full PDB)
