@@ -5,8 +5,6 @@
 #include <streambuf>
 
 
-GLuint vertexArrayObject;
-GLuint shaderProgram;
 // Creates the main window. Returns true on success.
 bool GameCore::init(int width, int height)
 {
@@ -16,9 +14,8 @@ bool GameCore::init(int width, int height)
 		return false;
 	}
 
-	SDL_GL_LoadLibrary(nullptr); // Default OpenGL is fine.
+	SDL_GL_LoadLibrary(nullptr);
 
-	// Request an OpenGL 4.3 context (should be core)
 	SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
@@ -28,7 +25,6 @@ bool GameCore::init(int width, int height)
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
-	//Create window
 	window = SDL_CreateWindow("Vanguard", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 	if (window == nullptr)
 	{
@@ -58,7 +54,7 @@ bool GameCore::init(int width, int height)
 }
 
 
-// Destroys the avancez library instance
+// Destroys the library instance
 void GameCore::destroy()
 {
 	SDL_DestroyWindow(window);
@@ -151,17 +147,23 @@ void GameCore::processInput()
 
 }
 
-void GameCore::render()
+void GameCore::render(GLuint shaderProgram, GLuint vertexArrayObject)
 {
 	int w, h;
 	SDL_GetWindowSize(window, &w, &h);
 	glViewport(0, 0, w, h);	
 	glClearColor(0.2f, 0.6f, 0.4f, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
+
+	glUseProgram(shaderProgram);
+	glBindVertexArray(vertexArrayObject);
+	glEnable(GL_PROGRAM_POINT_SIZE);
+	glDrawArrays(GL_POINTS, 0, 10000);
+
 	SDL_GL_SwapWindow(window);
 }
 
+//returns the elapsed game time in milliseconds
 float GameCore::getElapsedTime()
 {
 	return SDL_GetTicks();
@@ -177,4 +179,66 @@ void GameCore::getKeyStatus(KeyStatus & keys)
 	keys.right = key.right;
 	keys.up = key.up;
 	keys.down = key.down;
+}
+
+GLuint GameCore::loadShaderProgram(const std::string &vertexShader, const std::string &fragmentShader)
+{
+	GLuint vShader = glCreateShader(GL_VERTEX_SHADER);
+	GLuint fShader = glCreateShader(GL_FRAGMENT_SHADER);
+
+	std::ifstream vs_file(vertexShader);
+	std::string vs_src((std::istreambuf_iterator<char>(vs_file)), std::istreambuf_iterator<char>());
+
+	std::ifstream fs_file(fragmentShader);
+	std::string fs_src((std::istreambuf_iterator<char>(fs_file)), std::istreambuf_iterator<char>());
+
+	const char *vs = vs_src.c_str();
+	const char *fs = fs_src.c_str();
+
+	glShaderSource(vShader, 1, &vs, nullptr);
+	glShaderSource(fShader, 1, &fs, nullptr);
+
+	glCompileShader(vShader);
+	int compileOk = 0;
+	glGetShaderiv(vShader, GL_COMPILE_STATUS, &compileOk);
+	if (!compileOk)
+	{
+		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unable to load shader file: %s\n", vs_file);
+		return 0;
+	}
+
+	glCompileShader(fShader);
+	glGetShaderiv(fShader, GL_COMPILE_STATUS, &compileOk);
+	if (!compileOk)
+	{
+		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unable to load shader file: %s\n", fs_file);
+		return 0;
+	}
+
+	GLuint shaderProgram = glCreateProgram();
+	glAttachShader(shaderProgram, fShader);
+	glDeleteShader(fShader);
+	glAttachShader(shaderProgram, vShader);
+	glDeleteShader(vShader);
+
+	if (!linkShaderProgram(shaderProgram)) return 0;
+
+	return shaderProgram;
+}
+
+bool GameCore::linkShaderProgram(GLuint shaderProgram)
+{
+	glLinkProgram(shaderProgram);
+	GLint linkOk = 0;
+	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &linkOk);
+	if (!linkOk)
+	{
+		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unable to link shader program\n");
+		return false;
+	}
+	return true;
+}
+
+float GameCore::randf() {
+	return float(rand()) / float(RAND_MAX);
 }

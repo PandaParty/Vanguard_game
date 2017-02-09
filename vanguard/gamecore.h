@@ -3,6 +3,8 @@
 
 #include "SDL.h"
 #include "SDL_ttf.h"
+#include <GL/glew.h>
+#include <string>
 
 class GameCore
 {
@@ -17,7 +19,9 @@ public:
 	// If update returns false, the application should terminate.
 	bool update();
 	void processInput();
-	void render();
+	void render(GLuint shaderProgram, GLuint vertexArrayObject);
+
+	float randf();
 
 	// Draws the given text.
 	void drawText(int x, int y, const char* msg);
@@ -40,12 +44,16 @@ public:
 	// Returns the keyboard status. If a flag is set, the corresponding key is being held down.
 	void getKeyStatus(KeyStatus& keys);
 
+	GLuint loadShaderProgram(const std::string &vertexShader, const std::string &fragmentShader);
+
 private:
 	SDL_Window * window;
 
 	TTF_Font* font;
 
 	KeyStatus key;
+
+	bool linkShaderProgram(GLuint shaderProgram);
 };
 
 
