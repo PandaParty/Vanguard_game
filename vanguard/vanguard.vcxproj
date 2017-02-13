@@ -150,11 +150,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="gamecore.cpp" />
+    <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="vanguard.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gamecore.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="ParticleSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="particle.frag" />

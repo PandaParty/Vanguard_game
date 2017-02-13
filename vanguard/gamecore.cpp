@@ -147,20 +147,16 @@ void GameCore::processInput()
 
 }
 
-void GameCore::render(GLuint shaderProgram, GLuint vertexArrayObject)
+void GameCore::render()
 {
+	SDL_GL_SwapWindow(window);
+
 	int w, h;
 	SDL_GetWindowSize(window, &w, &h);
-	glViewport(0, 0, w, h);	
+	glViewport(0, 0, w, h);
 	glClearColor(0.2f, 0.6f, 0.4f, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glUseProgram(shaderProgram);
-	glBindVertexArray(vertexArrayObject);
-	glEnable(GL_PROGRAM_POINT_SIZE);
-	glDrawArrays(GL_POINTS, 0, 10000);
-
-	SDL_GL_SwapWindow(window);
 }
 
 //returns the elapsed game time in milliseconds

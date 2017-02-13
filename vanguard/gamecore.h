@@ -19,9 +19,9 @@ public:
 	// If update returns false, the application should terminate.
 	bool update();
 	void processInput();
-	void render(GLuint shaderProgram, GLuint vertexArrayObject);
+	void render();
 
-	float randf();
+	static float randf();
 
 	// Draws the given text.
 	void drawText(int x, int y, const char* msg);
@@ -44,7 +44,7 @@ public:
 	// Returns the keyboard status. If a flag is set, the corresponding key is being held down.
 	void getKeyStatus(KeyStatus& keys);
 
-	GLuint loadShaderProgram(const std::string &vertexShader, const std::string &fragmentShader);
+	static GLuint loadShaderProgram(const std::string &vertexShader, const std::string &fragmentShader);
 
 private:
 	SDL_Window * window;
@@ -53,7 +53,7 @@ private:
 
 	KeyStatus key;
 
-	bool linkShaderProgram(GLuint shaderProgram);
+	static bool linkShaderProgram(GLuint shaderProgram);
 };
 
 
