@@ -1,9 +1,3 @@
 ﻿  ParticleSystem.cpp
-  Generating Code...
-  Compiling...
-  vanguard.cpp
-c:\users\anton\documents\game engine architecture\vanguard\vanguard\vanguard.cpp(33): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-c:\users\anton\documents\game engine architecture\vanguard\vanguard\vanguard.cpp(37): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-  Generating Code...
   vanguard.vcxproj -> C:\Users\Anton\Documents\Game Engine Architecture\Vanguard\vanguard\x64\Debug\vanguard.exe
   vanguard.vcxproj -> C:\Users\Anton\Documents\Game Engine Architecture\Vanguard\vanguard\x64\Debug\vanguard.pdb (Full PDB)

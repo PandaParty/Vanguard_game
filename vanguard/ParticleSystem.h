@@ -13,12 +13,15 @@ public:
 private:
 	GLuint vertexArrayObject;
 	GLuint particleBuffer;
+	GLuint timeBuffer;
 	GLuint shaderProgram;
 	void CreateVertexArrayObject();
 	int firstActiveParticle;
 	int firstDeadParticle;
-	std::vector<glm::vec2> data;
+	std::vector<glm::vec4> data;
+	std::vector<float> timeData;
 	int maxParticles;
 	int spawnRate;
-	float lifeTime;
+	int lifeTime;
+	int currentFrames;
 };

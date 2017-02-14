@@ -45,7 +45,7 @@ public:
 	void getKeyStatus(KeyStatus& keys);
 
 	static GLuint loadShaderProgram(const std::string &vertexShader, const std::string &fragmentShader);
-
+	static void setUniform(GLuint shaderProgram, const char *name, const float value);
 private:
 	SDL_Window * window;
 

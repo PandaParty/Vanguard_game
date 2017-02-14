@@ -235,6 +235,11 @@ bool GameCore::linkShaderProgram(GLuint shaderProgram)
 	return true;
 }
 
+void GameCore::setUniform(GLuint shaderProgram, const char *name, const float value)
+{
+	glUniform1f(glGetUniformLocation(shaderProgram, name), value);
+}
+
 float GameCore::randf() {
 	return float(rand()) / float(RAND_MAX);
 }
