@@ -3,9 +3,9 @@
 
 void ParticleSystem::Initialize()
 {
-	maxParticles = 10000000;
-	spawnRate = 10000;
-	lifeTime = 5000;
+	maxParticles = 100000000;
+	spawnRate = 1000;
+	lifeTime = 10000;
 	currentFrames = 0;
 	firstActiveParticle = 0;
 	firstFreeParticle = 0;
@@ -56,7 +56,7 @@ void ParticleSystem::Update()
 void ParticleSystem::Spawn()
 {
 	for (int i = 0; i < spawnRate; ++i) {
-		data[i] = glm::vec4(0.0f, 0.0f, (GameCore::randf() * 2 - 1) / 5000, (GameCore::randf() * 2 - 1) / 5000);
+		data[i] = glm::vec4(0.0f, 0.0f, (GameCore::randf() * 2 - 1) / 500, (GameCore::randf() * 2 - 1) / 500);
 		timeData[i] = (float)currentFrames;
 	}
 
@@ -75,6 +75,9 @@ void ParticleSystem::Render()
 	glUseProgram(shaderProgram);
 	glBindVertexArray(vertexArrayObject);
 	glEnable(GL_PROGRAM_POINT_SIZE);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_ONE, GL_ONE);
+
 	if (firstActiveParticle < firstFreeParticle)
 	{
 		glDrawArrays(GL_POINTS, firstActiveParticle, firstFreeParticle - firstActiveParticle);

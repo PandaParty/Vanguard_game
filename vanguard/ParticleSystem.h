@@ -14,6 +14,7 @@ private:
 	GLuint vertexArrayObject;
 	GLuint particleBuffer;
 	GLuint timeBuffer;
+	
 	GLuint shaderProgram;
 	void CreateVertexArrayObject();
 	int firstActiveParticle;

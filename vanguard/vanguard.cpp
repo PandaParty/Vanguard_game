@@ -15,7 +15,7 @@ int main(int argc, char** argv)
 {
 	GameCore gameCore;
 
-	gameCore.init(800, 600);
+	gameCore.init(1280, 720);
 
 	double previous = gameCore.getElapsedTime();
 	double lag = 0.0;
