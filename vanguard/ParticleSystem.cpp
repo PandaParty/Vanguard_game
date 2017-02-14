@@ -5,41 +5,68 @@ void ParticleSystem::Initialize()
 {
 	maxParticles = 10000000;
 	spawnRate = 10000;
-	lifeTime = 20000;
+	lifeTime = 5000;
 	currentFrames = 0;
 	firstActiveParticle = 0;
-	firstDeadParticle = 0;
+	firstFreeParticle = 0;
 	CreateVertexArrayObject();
 	shaderProgram = GameCore::loadShaderProgram("particle.vert", "particle.frag");
 
 	data.resize(spawnRate);
 	timeData.resize(spawnRate);
+
+	Spawn();
 }
 
-void ParticleSystem::Update(float elapsedTime)
+void ParticleSystem::Update()
 {
-	GameCore::setUniform(shaderProgram, "time", elapsedTime);
+	bool shouldSpawn = false;
+	GameCore::setUniform(shaderProgram, "time", (float)currentFrames);
+
 	if (++currentFrames > lifeTime)
 	{
 		firstActiveParticle += spawnRate;
 	}
-	for (int i = 0; i < spawnRate; ++i) {
-		data[i] = glm::vec4(0.0f, 0.0f, (GameCore::randf() * 2 - 1) / 10000, (GameCore::randf() * 2 - 1) / 10000);
-		timeData[i] = elapsedTime;
+	if (firstFreeParticle >= maxParticles && firstActiveParticle != 0)
+	{
+		firstFreeParticle = 0;
+	}
+	if (firstActiveParticle >= maxParticles)
+	{
+		firstActiveParticle = 0;
 	}
 
-	firstDeadParticle += spawnRate;
+	if(firstActiveParticle < firstFreeParticle)
+	{
+		shouldSpawn = firstFreeParticle - firstActiveParticle < maxParticles;
+	}
+	else if(firstActiveParticle - firstFreeParticle > 0)
+	{
+		shouldSpawn = true;
+	}
+
+	if (shouldSpawn) 
+	{
+		Spawn();
+	}
+
+	
+}
+
+void ParticleSystem::Spawn()
+{
+	for (int i = 0; i < spawnRate; ++i) {
+		data[i] = glm::vec4(0.0f, 0.0f, (GameCore::randf() * 2 - 1) / 5000, (GameCore::randf() * 2 - 1) / 5000);
+		timeData[i] = (float)currentFrames;
+	}
+
+	firstFreeParticle += spawnRate;
 	glBindVertexArray(vertexArrayObject);
 	glBindBuffer(GL_ARRAY_BUFFER, particleBuffer);
-	glBufferSubData(GL_ARRAY_BUFFER, sizeof(glm::vec4) * (firstDeadParticle - spawnRate), sizeof(glm::vec4) * spawnRate, data.data());
+	glBufferSubData(GL_ARRAY_BUFFER, sizeof(glm::vec4) * (firstFreeParticle - spawnRate), sizeof(glm::vec4) * spawnRate, data.data());
 
 	glBindBuffer(GL_ARRAY_BUFFER, timeBuffer);
-	glBufferSubData(GL_ARRAY_BUFFER, sizeof(GL_FLOAT) * (firstDeadParticle - spawnRate), sizeof(GL_FLOAT) * spawnRate, timeData.data());
-
-	if (firstDeadParticle > maxParticles)
-	{
-		printf("reached max particles");
-	}
+	glBufferSubData(GL_ARRAY_BUFFER, sizeof(GL_FLOAT) * (firstFreeParticle - spawnRate), sizeof(GL_FLOAT) * spawnRate, timeData.data());
 
 }
 
@@ -48,9 +75,17 @@ void ParticleSystem::Render()
 	glUseProgram(shaderProgram);
 	glBindVertexArray(vertexArrayObject);
 	glEnable(GL_PROGRAM_POINT_SIZE);
-	if (firstActiveParticle < firstDeadParticle)
+	if (firstActiveParticle < firstFreeParticle)
 	{
-		glDrawArrays(GL_POINTS, firstActiveParticle, firstDeadParticle);
+		glDrawArrays(GL_POINTS, firstActiveParticle, firstFreeParticle - firstActiveParticle);
+	}
+	else if (firstActiveParticle > 0)
+	{
+	    glDrawArrays(GL_POINTS, firstActiveParticle, maxParticles - firstActiveParticle);
+		if (firstFreeParticle > 0)
+		{
+			glDrawArrays(GL_POINTS, 0, firstFreeParticle);
+		}
 	}
 }
 

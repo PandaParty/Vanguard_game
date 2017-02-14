@@ -154,7 +154,7 @@ void GameCore::render()
 	int w, h;
 	SDL_GetWindowSize(window, &w, &h);
 	glViewport(0, 0, w, h);
-	glClearColor(0.2f, 0.6f, 0.4f, 1.0);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 }

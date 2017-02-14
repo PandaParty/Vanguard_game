@@ -7,7 +7,7 @@ class ParticleSystem
 {
 public:
 	void Initialize();
-	void Update(float elapsedTime);
+	void Update();
 	void Render();
 
 private:
@@ -17,11 +17,14 @@ private:
 	GLuint shaderProgram;
 	void CreateVertexArrayObject();
 	int firstActiveParticle;
-	int firstDeadParticle;
+	int firstFreeParticle;
+	
 	std::vector<glm::vec4> data;
 	std::vector<float> timeData;
 	int maxParticles;
 	int spawnRate;
 	int lifeTime;
 	int currentFrames;
+
+	void Spawn();
 };

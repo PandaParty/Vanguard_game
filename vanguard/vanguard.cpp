@@ -17,11 +17,12 @@ int main(int argc, char** argv)
 
 	gameCore.init(800, 600);
 
+	double previous = gameCore.getElapsedTime();
+	double lag = 0.0;
+
 	ParticleSystem particleSystem;
 	particleSystem.Initialize();
 
-	double previous = gameCore.getElapsedTime();
-	double lag = 0.0;
 	while (gameCore.update())
 	{
 		double current = gameCore.getElapsedTime();
@@ -30,11 +31,11 @@ int main(int argc, char** argv)
 		lag += elapsed;
 
 		gameCore.processInput();
-		particleSystem.Update(current);
+		particleSystem.Update();
 		while (lag >= MS_PER_UPDATE)
 		{
 			gameCore.update();
-			particleSystem.Update(current);
+			//particleSystem.Update(current);
 			lag -= MS_PER_UPDATE;
 		}
 		printf("Elapsed time: %f\n", elapsed);
