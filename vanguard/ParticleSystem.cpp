@@ -1,19 +1,29 @@
 #include "ParticleSystem.h"
 #include "gamecore.h"
+#include <algorithm>
 
 void ParticleSystem::Initialize()
 {
-	maxParticles = 100000000;
 	spawnRate = 1000;
 	lifeTime = 10000;
+	maxParticles = std::min(spawnRate * lifeTime + 10, 1000000);
+	emitterSize = glm::vec2(0.1f, 0.1f);
+	position = glm::vec2(0.8f, 0.8f);
+	direction = glm::vec2(0.0f, 0.1f);
+	force = glm::vec2(-0.0001f, -0.0001f);
+	speed = 0.005f;
+	spread = 0.0f;
+	outwardVelocity = 1.0f;
+
 	currentFrames = 0;
 	firstActiveParticle = 0;
 	firstFreeParticle = 0;
+
 	CreateVertexArrayObject();
 	shaderProgram = GameCore::loadShaderProgram("particle.vert", "particle.frag");
-
 	data.resize(spawnRate);
 	timeData.resize(spawnRate);
+	forceData.resize(spawnRate);
 
 	Spawn();
 }
@@ -56,8 +66,18 @@ void ParticleSystem::Update()
 void ParticleSystem::Spawn()
 {
 	for (int i = 0; i < spawnRate; ++i) {
-		data[i] = glm::vec4(0.0f, 0.0f, (GameCore::randf() * 2 - 1) / 500, (GameCore::randf() * 2 - 1) / 500);
+		glm::vec2 particlePos = glm::vec2(position.x + GameCore::randf() * emitterSize.x - emitterSize.x / 2,
+			position.y + GameCore::randf() * emitterSize.y - emitterSize.y / 2);
+		glm::vec2 particleDir = glm::vec2(direction.x, direction.y);
+		particleDir += CalculateSpread(particleDir);
+		particleDir += glm::normalize(particlePos - position) * outwardVelocity;
+		particleDir = glm::normalize(particleDir);
+		data[i] = glm::vec4(particlePos.x, 
+			particlePos.y,
+			particleDir.x * speed,
+			particleDir.y * speed);
 		timeData[i] = (float)currentFrames;
+		forceData[i] = force;
 	}
 
 	firstFreeParticle += spawnRate;
@@ -68,6 +88,8 @@ void ParticleSystem::Spawn()
 	glBindBuffer(GL_ARRAY_BUFFER, timeBuffer);
 	glBufferSubData(GL_ARRAY_BUFFER, sizeof(GL_FLOAT) * (firstFreeParticle - spawnRate), sizeof(GL_FLOAT) * spawnRate, timeData.data());
 
+	glBindBuffer(GL_ARRAY_BUFFER, forceBuffer);
+	glBufferSubData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * (firstFreeParticle - spawnRate), sizeof(glm::vec2) * spawnRate, forceData.data());
 }
 
 void ParticleSystem::Render()
@@ -102,12 +124,33 @@ void ParticleSystem::CreateVertexArrayObject()
 	glBindBuffer(GL_ARRAY_BUFFER, timeBuffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(GL_FLOAT) * maxParticles, nullptr, GL_DYNAMIC_DRAW);
 
+	glGenBuffers(1, &forceBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, forceBuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * maxParticles, nullptr, GL_DYNAMIC_DRAW);
+
 	glGenVertexArrays(1, &vertexArrayObject);
 	glBindVertexArray(vertexArrayObject);
 	glBindBuffer(GL_ARRAY_BUFFER, particleBuffer);
 	glVertexAttribPointer(0, 4, GL_FLOAT, false, 0, 0);
 	glBindBuffer(GL_ARRAY_BUFFER, timeBuffer);
 	glVertexAttribPointer(1, 1, GL_FLOAT, false, 0, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, forceBuffer);
+	glVertexAttribPointer(2, 2, GL_FLOAT, false, 0, 0);
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
+	glEnableVertexAttribArray(2);
+}
+
+glm::vec2 ParticleSystem::CalculateSpread(const glm::vec2 particleDir)
+{
+	if (spread == 0.0f || (particleDir.x == 0.0f && particleDir.y == 0.0f))
+		return glm::vec2(0.0f);
+	float rotation = glm::acos(glm::dot(glm::vec2(0.0f, -1.0f), particleDir));
+	if (glm::dot(glm::vec2(0.0f, -1.0f), glm::vec2(particleDir.y, -particleDir.x)) < 0.0f)
+	{
+		rotation *= -1;
+	}
+	float randomNumber = GameCore::randf() * 2 - 1;
+	return glm::vec2(glm::sin(rotation - glm::radians(randomNumber * spread)),
+		-glm::cos(rotation - glm::radians(randomNumber * spread)));
 }
