@@ -2,9 +2,15 @@
 #include <GL/glew.h>
 #include <vector>
 #include <glm/glm.hpp>
+#include <glm/gtc/constants.hpp>
 
 class ParticleSystem
 {
+	enum Shape {
+		Rectangle,
+		Circle
+	};
+
 public:
 	void Initialize();
 	void Update();
@@ -19,7 +25,7 @@ private:
 	int firstActiveParticle;
 	int firstFreeParticle;
 	std::vector<glm::vec4> data;
-	std::vector<float> timeData;
+	std::vector<glm::vec2> timeData;
 	std::vector<glm::vec2> forceData;
 
 	int maxParticles;
@@ -33,8 +39,11 @@ private:
 	float speed;
 	float spread;
 	float outwardVelocity;
+	Shape shape;
 
 	void CreateVertexArrayObject();
 	void Spawn();
 	glm::vec2 CalculateSpread(const glm::vec2 particleDir);
+
+	
 };

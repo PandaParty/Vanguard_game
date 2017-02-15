@@ -4,7 +4,8 @@
 #include <fstream>
 #include <streambuf>
 
-
+std::default_random_engine GameCore::generator;
+std::uniform_real_distribution<float> GameCore::distribution;
 // Creates the main window. Returns true on success.
 bool GameCore::init(int width, int height)
 {
@@ -241,5 +242,6 @@ void GameCore::setUniform(GLuint shaderProgram, const char *name, const float va
 }
 
 float GameCore::randf() {
-	return float(rand()) / float(RAND_MAX);
+	
+	return distribution(generator);
 }

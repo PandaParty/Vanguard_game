@@ -5,6 +5,7 @@
 #include "SDL_ttf.h"
 #include <GL/glew.h>
 #include <string>
+#include <random>
 
 class GameCore
 {
@@ -54,6 +55,9 @@ private:
 	KeyStatus key;
 
 	static bool linkShaderProgram(GLuint shaderProgram);
+
+	static std::default_random_engine generator;
+	static std::uniform_real_distribution<float> distribution;
 };
 
 
