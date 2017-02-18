@@ -26,7 +26,7 @@ private:
 	int firstFreeParticle;
 	std::vector<glm::vec4> data;
 	std::vector<glm::vec2> timeData;
-	std::vector<glm::vec2> forceData;
+	std::vector<glm::vec3> forceData;
 
 	int maxParticles;
 	int spawnRate;
@@ -39,6 +39,8 @@ private:
 	float speed;
 	float spread;
 	float outwardVelocity;
+	float friction;
+	bool oneShot;
 	Shape shape;
 
 	void CreateVertexArrayObject();

@@ -6,5 +6,5 @@ in float life;
 
 void main()
 {
-	gl_FragColor = vec4 (0.2f, 0.2f, 0.8f, life);
+	gl_FragColor = vec4 (0.2f, 0.05f, 0.05f, life);
 }
