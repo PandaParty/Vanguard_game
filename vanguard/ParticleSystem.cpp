@@ -9,14 +9,14 @@ void ParticleSystem::Initialize()
 	maxParticles = std::min(spawnRate * lifeTime, 1000000);
 	emitterSize = glm::vec2(0.1f, 0.1f);
 	position = glm::vec2(0.0f, 0.0f);
-	direction = glm::vec2(-0.0f, 0.0f);
-	force = glm::vec2(0.0000f, 0.0000f);
+	direction = glm::vec2(-1.0f, 0.0f);
+	force = glm::vec2(0.0000f, 0.00005f);
 	speed = 0.02f;
-	spread = 0.0f;
-	outwardVelocity = 1.0f;
+	spread = 45.0f;
+	outwardVelocity = 0.0f;
 	friction = 0.97f;
 	shape = Circle;
-	oneShot = true;
+	oneShot = false;
 
 	currentFrames = 0;
 	firstActiveParticle = 0;

@@ -154,6 +154,7 @@
     <ClCompile Include="vanguard.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Component.h" />
     <ClInclude Include="gamecore.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="ParticleSystem.h" />

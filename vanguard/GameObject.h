@@ -1,7 +1,23 @@
 #pragma once
-#ifndef __GAME_OBJECT__
-#define __GAME_OBJECT__
+#include <glm/glm.hpp>
+#include <vector>
+#include <string>
 
+class Component;
+class GameObject
+{
+protected:
+	std::vector<Component*> components;
+public:
+	glm::vec2 position;
+	bool enabled;
+	std::string name;
 
+	virtual ~GameObject();
 
-#endif __GAME_OBJECT__
+	virtual void Create();
+
+	virtual void Init();
+	virtual void Update(float elapsed);
+	virtual void Destroy();
+};
