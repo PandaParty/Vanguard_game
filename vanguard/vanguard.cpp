@@ -1,5 +1,6 @@
 #include "stdio.h"
 #include "gamecore.h"
+#include "SpriteRenderer.h"
 #include <GL/glew.h>
 #include <string>
 #include <fstream>
@@ -23,6 +24,9 @@ int main(int argc, char** argv)
 	//ParticleSystem particleSystem;
 	//particleSystem.Initialize();
 
+	SpriteRenderer sprite;
+	sprite.Initialize();
+
 	while (gameCore.update())
 	{
 		double current = gameCore.getElapsedTime();
@@ -40,6 +44,7 @@ int main(int argc, char** argv)
 		}
 		//printf("Elapsed time: %f\n", elapsed);
 		//particleSystem.Render();
+		sprite.Render(glm::vec2(0.0f, 0.0f));
 		gameCore.render();
 
 	}

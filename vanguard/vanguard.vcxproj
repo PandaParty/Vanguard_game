@@ -103,7 +103,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Users\Anton\Documents\Game Engine Architecture\Vanguard\glm-0.9.8.1;C:\Users\Anton\Documents\Game Engine Architecture\Vanguard\glew-2.0.0\include;C:\Users\Anton\Documents\Game Engine Architecture\Vanguard\SDL2_ttf-2.0.14\include;C:\Users\Anton\Documents\Game Engine Architecture\Vanguard\SDL2-2.0.5\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Anton\Documents\Game Engine Architecture\Vanguard\stb-1.0;C:\Users\Anton\Documents\Game Engine Architecture\Vanguard\glm-0.9.8.1;C:\Users\Anton\Documents\Game Engine Architecture\Vanguard\glew-2.0.0\include;C:\Users\Anton\Documents\Game Engine Architecture\Vanguard\SDL2_ttf-2.0.14\include;C:\Users\Anton\Documents\Game Engine Architecture\Vanguard\SDL2-2.0.5\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -151,6 +151,7 @@
   <ItemGroup>
     <ClCompile Include="gamecore.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
+    <ClCompile Include="SpriteRenderer.cpp" />
     <ClCompile Include="vanguard.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -158,10 +159,13 @@
     <ClInclude Include="gamecore.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="ParticleSystem.h" />
+    <ClInclude Include="SpriteRenderer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="particle.frag" />
     <None Include="particle.vert" />
+    <None Include="sprite.frag" />
+    <None Include="sprite.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
