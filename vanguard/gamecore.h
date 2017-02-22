@@ -6,6 +6,7 @@
 #include <GL/glew.h>
 #include <string>
 #include <random>
+#include <glm\glm.hpp>
 
 class GameCore
 {
@@ -47,6 +48,7 @@ public:
 
 	static GLuint loadShaderProgram(const std::string &vertexShader, const std::string &fragmentShader);
 	static void setUniform(GLuint shaderProgram, const char *name, const float value);
+	static void setUniform(GLuint shaderProgram, const char *name, const glm::mat4 &value);
 private:
 	SDL_Window * window;
 

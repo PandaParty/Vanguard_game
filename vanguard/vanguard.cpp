@@ -25,7 +25,7 @@ int main(int argc, char** argv)
 	//particleSystem.Initialize();
 
 	SpriteRenderer sprite;
-	sprite.Initialize();
+	sprite.Initialize("megaman.jpg");
 
 	while (gameCore.update())
 	{
@@ -44,7 +44,7 @@ int main(int argc, char** argv)
 		}
 		//printf("Elapsed time: %f\n", elapsed);
 		//particleSystem.Render();
-		sprite.Render(glm::vec2(0.0f, 0.0f));
+		sprite.Render(glm::vec2(200.0f, 100.0f), glm::vec2(200, 200));
 		gameCore.render();
 
 	}

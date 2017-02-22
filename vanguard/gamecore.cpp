@@ -241,6 +241,11 @@ void GameCore::setUniform(GLuint shaderProgram, const char *name, const float va
 	glUniform1f(glGetUniformLocation(shaderProgram, name), value);
 }
 
+void GameCore::setUniform(GLuint shaderProgram, const char *name, const glm::mat4 &value)
+{
+	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, name), 1, false, &value[0].x);
+}
+
 float GameCore::randf() {
 	
 	return distribution(generator);
