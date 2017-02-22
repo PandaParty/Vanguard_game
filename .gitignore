@@ -25,3 +25,7 @@
 *.exe
 *.out
 *.app
+
+# OS generated files
+Thumbs.db
+*.VC.db
