@@ -2,21 +2,35 @@
 #include "gamecore.h"
 #include <algorithm>
 
+void ParticleSystem::Initialize(const char* textureFile)
+{
+	Initialize();
+	texture = GameCore::LoadTexture(textureFile);
+	glUseProgram(shaderProgram);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture);
+}
+
 void ParticleSystem::Initialize()
 {
 	spawnRate = 1000;
 	lifeTime = 100;
 	maxParticles = std::min(spawnRate * lifeTime, 1000000);
 	emitterSize = glm::vec2(0.1f, 0.1f);
-	position = glm::vec2(0.0f, 0.0f);
+	position = glm::vec2(0.5f, 0.0f);
 	direction = glm::vec2(-1.0f, 0.0f);
 	force = glm::vec2(0.0000f, 0.00005f);
-	speed = 0.02f;
-	spread = 45.0f;
+	minSpeed = 0.01f;
+	maxSpeed = 0.03f;
+	spread = 90.0f;
 	outwardVelocity = 0.0f;
 	friction = 0.97f;
+	minSize = 10.5f;
+	maxSize = 52.5f;
 	shape = Circle;
 	oneShot = false;
+
+	color = glm::vec3(0.000f, 0.00f, 0.00f);
 
 	currentFrames = 0;
 	firstActiveParticle = 0;
@@ -24,9 +38,13 @@ void ParticleSystem::Initialize()
 
 	CreateVertexArrayObject();
 	shaderProgram = GameCore::loadShaderProgram("particle.vert", "particle.frag");
+	glUseProgram(shaderProgram);
+	GameCore::setUniform(shaderProgram, "color", color);
+
 	data.resize(spawnRate);
 	timeData.resize(spawnRate);
 	forceData.resize(spawnRate);
+	sizeData.resize(spawnRate);
 	if (oneShot)
 	{
 		firstFreeParticle = spawnRate;
@@ -37,6 +55,7 @@ void ParticleSystem::Initialize()
 
 void ParticleSystem::Update()
 {
+	glUseProgram(shaderProgram);
 	bool shouldSpawn = false;
 	GameCore::setUniform(shaderProgram, "time", (float)currentFrames);
 
@@ -77,8 +96,6 @@ void ParticleSystem::Update()
 	{
 		Spawn();
 	}
-
-	
 }
 
 void ParticleSystem::Spawn()
@@ -105,12 +122,14 @@ void ParticleSystem::Spawn()
 			particleDir = glm::normalize(particleDir);
 		}
 		particleDir += glm::normalize(particlePos - position) * outwardVelocity;
+		float pSpeed = minSpeed + GameCore::randf() * (maxSpeed - minSpeed);
 		data[i] = glm::vec4(particlePos.x, 
 			particlePos.y,
-			particleDir.x * speed,
-			particleDir.y * speed);
+			particleDir.x * pSpeed,
+			particleDir.y * pSpeed);
 		timeData[i] = glm::vec2((float)currentFrames, (float)lifeTime);
 		forceData[i] = glm::vec3(force, friction);
+		sizeData[i] = minSize + GameCore::randf() * (maxSize - minSize);
 	}
 	if (!oneShot)
 	{
@@ -125,6 +144,9 @@ void ParticleSystem::Spawn()
 
 	glBindBuffer(GL_ARRAY_BUFFER, forceBuffer);
 	glBufferSubData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * (firstFreeParticle - spawnRate), sizeof(glm::vec3) * spawnRate, forceData.data());
+
+	glBindBuffer(GL_ARRAY_BUFFER, sizeBuffer);
+	glBufferSubData(GL_ARRAY_BUFFER, sizeof(float) * (firstFreeParticle - spawnRate), sizeof(float) * spawnRate, sizeData.data());
 }
 
 void ParticleSystem::Render()
@@ -134,6 +156,12 @@ void ParticleSystem::Render()
 	glEnable(GL_PROGRAM_POINT_SIZE);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+	if (texture != 0)
+	{
+		glEnable(GL_POINT_SPRITE);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture);
+	}
 
 	if (firstActiveParticle < firstFreeParticle)
 	{
@@ -147,6 +175,9 @@ void ParticleSystem::Render()
 			glDrawArrays(GL_POINTS, 0, firstFreeParticle);
 		}
 	}
+
+	glDisable(GL_PROGRAM_POINT_SIZE);
+	glDisable(GL_BLEND);
 }
 
 void ParticleSystem::CreateVertexArrayObject() 
@@ -163,6 +194,10 @@ void ParticleSystem::CreateVertexArrayObject()
 	glBindBuffer(GL_ARRAY_BUFFER, forceBuffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * maxParticles, nullptr, GL_DYNAMIC_DRAW);
 
+	glGenBuffers(1, &sizeBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, sizeBuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * maxParticles, nullptr, GL_DYNAMIC_DRAW);
+
 	glGenVertexArrays(1, &vertexArrayObject);
 	glBindVertexArray(vertexArrayObject);
 	glBindBuffer(GL_ARRAY_BUFFER, particleBuffer);
@@ -171,9 +206,12 @@ void ParticleSystem::CreateVertexArrayObject()
 	glVertexAttribPointer(1, 2, GL_FLOAT, false, 0, 0);
 	glBindBuffer(GL_ARRAY_BUFFER, forceBuffer);
 	glVertexAttribPointer(2, 3, GL_FLOAT, false, 0, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, sizeBuffer);
+	glVertexAttribPointer(3, 1, GL_FLOAT, false, 0, 0);
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 	glEnableVertexAttribArray(2);
+	glEnableVertexAttribArray(3);
 }
 
 glm::vec2 ParticleSystem::CalculateSpread(const glm::vec2 particleDir)

@@ -1,3 +1,4 @@
+#pragma once
 #ifndef __GAME_CORE__
 #define __GAME_CORE__
 
@@ -7,6 +8,7 @@
 #include <string>
 #include <random>
 #include <glm\glm.hpp>
+#include "TextureEnums.h"
 
 class GameCore
 {
@@ -48,7 +50,11 @@ public:
 
 	static GLuint loadShaderProgram(const std::string &vertexShader, const std::string &fragmentShader);
 	static void setUniform(GLuint shaderProgram, const char *name, const float value);
+	static void setUniform(GLuint shaderProgram, const char *name, const glm::vec2 value);
+	static void setUniform(GLuint shaderProgram, const char *name, const glm::vec3 value);
 	static void setUniform(GLuint shaderProgram, const char *name, const glm::mat4 &value);
+	static GLuint LoadTexture(const char* spriteFile, TextureFormat format = TextureFormat::RGBA,
+		TextureFiltering filtering = TextureFiltering::TRILINEAR);
 private:
 	SDL_Window * window;
 
@@ -61,9 +67,5 @@ private:
 	static std::default_random_engine generator;
 	static std::uniform_real_distribution<float> distribution;
 };
-
-
-
-
 
 #endif __GAME_CORE__

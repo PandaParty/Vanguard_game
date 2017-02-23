@@ -3,6 +3,8 @@
 #include <string>
 #include <fstream>
 #include <streambuf>
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
 
 std::default_random_engine GameCore::generator;
 std::uniform_real_distribution<float> GameCore::distribution;
@@ -241,9 +243,82 @@ void GameCore::setUniform(GLuint shaderProgram, const char *name, const float va
 	glUniform1f(glGetUniformLocation(shaderProgram, name), value);
 }
 
+void GameCore::setUniform(GLuint shaderProgram, const char *name, const glm::vec2 value)
+{
+	glUniform2fv(glGetUniformLocation(shaderProgram, name), 1, &value.x);
+}
+
+void GameCore::setUniform(GLuint shaderProgram, const char *name, const glm::vec3 value)
+{
+	glUniform3fv(glGetUniformLocation(shaderProgram, name), 1, &value.x);
+}
+
 void GameCore::setUniform(GLuint shaderProgram, const char *name, const glm::mat4 &value)
 {
 	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, name), 1, false, &value[0].x);
+}
+
+GLuint GameCore::LoadTexture(const char* spriteFile, TextureFormat format, TextureFiltering filtering)
+{
+	int w, h, comp;
+	unsigned char* image = stbi_load(spriteFile, &w, &h, &comp, STBI_rgb_alpha);
+
+	GLint internalFormat;
+	switch (format)
+	{
+	case GRAY:
+		internalFormat = GL_RED;
+		break;
+	case RGB:
+		internalFormat = GL_RGB;
+		break;
+	case RGBA:
+	default:
+		internalFormat = GL_RGBA;
+	}
+
+	GLuint texture;
+
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, w, h, 0, internalFormat, GL_UNSIGNED_BYTE, image);
+	free(image);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	switch (filtering)
+	{
+	case NEAREST:
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		break;
+	case BILINEAR:
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		break;
+	case TRILINEAR:
+		glGenerateMipmap(GL_TEXTURE_2D);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		break;
+	case ANISOTROPIC_1:
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1.0f);
+		break;
+	case ANISOTROPIC_2:
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 2.0f);
+		break;
+	case ANISOTROPIC_4:
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 4.0f);
+		break;
+	case ANISOTROPIC_8:
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 8.0f);
+		break;
+	case ANISOTROPIC_16:
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16.0f);
+		break;
+	}
+
+	return texture;
 }
 
 float GameCore::randf() {

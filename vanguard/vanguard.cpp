@@ -21,8 +21,8 @@ int main(int argc, char** argv)
 	double previous = gameCore.getElapsedTime();
 	double lag = 0.0;
 
-	//ParticleSystem particleSystem;
-	//particleSystem.Initialize();
+	ParticleSystem particleSystem;
+	particleSystem.Initialize("explosion.png");
 
 	SpriteRenderer sprite;
 	sprite.Initialize("megaman.jpg");
@@ -35,16 +35,16 @@ int main(int argc, char** argv)
 		lag += elapsed;
 
 		gameCore.processInput();
-		//particleSystem.Update();
+		particleSystem.Update();
 		while (lag >= MS_PER_UPDATE)
 		{
 			gameCore.update();
 			//particleSystem.Update(current);
 			lag -= MS_PER_UPDATE;
 		}
-		//printf("Elapsed time: %f\n", elapsed);
-		//particleSystem.Render();
-		sprite.Render(glm::vec2(200.0f, 100.0f), glm::vec2(200, 200));
+		printf("Elapsed time: %f\n", elapsed);
+		particleSystem.Render();
+		//sprite.Render(glm::vec2(200.0f, 100.0f), glm::vec2(200, 200));
 		gameCore.render();
 
 	}

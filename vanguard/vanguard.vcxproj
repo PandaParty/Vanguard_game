@@ -160,6 +160,7 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="SpriteRenderer.h" />
+    <ClInclude Include="TextureEnums.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="particle.frag" />
