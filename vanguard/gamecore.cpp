@@ -28,7 +28,7 @@ bool GameCore::init(int width, int height)
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
-	window = SDL_CreateWindow("Vanguard", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+	window = SDL_CreateWindow("Vanguard", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_OPENGL);
 	if (window == nullptr)
 	{
 		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Window could not be created! SDL_Error: %s\n", SDL_GetError());
@@ -44,8 +44,8 @@ bool GameCore::init(int width, int height)
 	SDL_GL_SetSwapInterval(1);
 
 	// initialize the keys
-	key.fireUp = false;	
-	key.fireLeft = false;	
+	key.fireUp = false;
+	key.fireLeft = false;
 	key.fireRight = false; 	
 	key.fireDown = false;
 	key.up = false;
@@ -202,7 +202,7 @@ GLuint GameCore::loadShaderProgram(const std::string &vertexShader, const std::s
 	glGetShaderiv(vShader, GL_COMPILE_STATUS, &compileOk);
 	if (!compileOk)
 	{
-		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unable to load shader file: %s\n", vs_file);
+		//SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unable to load shader file: %s\n", vs_file);
 		return 0;
 	}
 
@@ -210,7 +210,7 @@ GLuint GameCore::loadShaderProgram(const std::string &vertexShader, const std::s
 	glGetShaderiv(fShader, GL_COMPILE_STATUS, &compileOk);
 	if (!compileOk)
 	{
-		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unable to load shader file: %s\n", fs_file);
+		//SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unable to load shader file: %s\n", fs_file);
 		return 0;
 	}
 

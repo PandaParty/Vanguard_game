@@ -50,6 +50,10 @@ private:
 	bool oneShot;
 	Shape shape;
 
+
+	glm::vec2 emitterDirection;
+	float emitterSpeed;
+
 	glm::vec3 color;
 
 	void CreateVertexArrayObject();

@@ -10,27 +10,30 @@ void ParticleSystem::Initialize(const char* textureFile)
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture);
 }
-
 void ParticleSystem::Initialize()
 {
-	spawnRate = 1000;
-	lifeTime = 100;
-	maxParticles = std::min(spawnRate * lifeTime, 1000000);
-	emitterSize = glm::vec2(0.1f, 0.1f);
-	position = glm::vec2(0.5f, 0.0f);
-	direction = glm::vec2(-1.0f, 0.0f);
+	spawnRate = 2000;
+	lifeTime = 500;
+	maxParticles = std::min(spawnRate * lifeTime, 50000000);
+	emitterSize = glm::vec2(0.01f, 0.01f);
+	position = glm::vec2(GameCore::randf() * 2.0f - 1.0f, GameCore::randf() * 2.0f - 1.0f);
+	direction = glm::vec2(0.0f, 0.0f);
 	force = glm::vec2(0.0000f, 0.00005f);
 	minSpeed = 0.01f;
 	maxSpeed = 0.03f;
 	spread = 90.0f;
 	outwardVelocity = 0.0f;
 	friction = 0.97f;
-	minSize = 10.5f;
-	maxSize = 52.5f;
+	minSize = 1.0f;
+	maxSize = 1.8f;
 	shape = Circle;
 	oneShot = false;
 
-	color = glm::vec3(0.000f, 0.00f, 0.00f);
+	emitterDirection = glm::vec2(1.0f, 1.0f);
+	emitterSpeed = 0.005f;
+
+	color = glm::vec3(GameCore::randf(), GameCore::randf(), GameCore::randf());
+	color = glm::normalize(color) / 5.0f;
 
 	currentFrames = 0;
 	firstActiveParticle = 0;
@@ -52,7 +55,7 @@ void ParticleSystem::Initialize()
 
 	Spawn();
 }
-
+float ang = 0.0f;
 void ParticleSystem::Update()
 {
 	glUseProgram(shaderProgram);
@@ -91,7 +94,26 @@ void ParticleSystem::Update()
 			shouldSpawn = true;
 		}
 	}
-	
+	ang += 0.05f;
+	direction = glm::vec2(cos(ang), sin(ang));
+	position += emitterDirection * emitterSpeed;
+	if (position.x > 1.0f)
+	{
+		emitterDirection.x = GameCore::randf() * -1.0f;
+	}
+	if (position.x < -1.0f)
+	{
+		emitterDirection.x = GameCore::randf();
+	}
+	if (position.y > 1.0f)
+	{
+		emitterDirection.y = GameCore::randf() * -1.0f;
+	}
+	if (position.y < -1.0f)
+	{
+		emitterDirection.y = GameCore::randf();
+	}
+	emitterDirection = glm::normalize(emitterDirection);
 	if (shouldSpawn) 
 	{
 		Spawn();

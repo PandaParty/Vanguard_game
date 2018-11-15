@@ -1,8 +1,8 @@
 #version 420
-layout(location = 0) in vec4 particle;
-layout(location = 1) in vec2 startAndLife;
-layout(location = 2) in vec3 force;
-layout(location = 3) in float size;
+layout(location = 0) in lowp vec4 particle;
+layout(location = 1) in lowp vec2 startAndLife;
+layout(location = 2) in lowp vec3 force;
+layout(location = 3) in lowp float size;
 
 uniform float time;
 
